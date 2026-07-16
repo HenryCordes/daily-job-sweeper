@@ -1,0 +1,17 @@
+# your personal profile — copy profile.example.config.mjs and edit
+profile.config.mjs
+
+# state files — created on first run (see README)
+seen.json
+applied.json
+watchlist.json
+fingerprinted.json
+matches.csv
+matches.html
+ranked/
+summary.txt
+
+# misc
+log.txt
+node_modules/
+.DS_Store

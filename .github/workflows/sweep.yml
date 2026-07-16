@@ -1,0 +1,71 @@
+name: daily-job-sweep
+
+on:
+  schedule:
+    # Two runs a day so an 08:30-local delivery survives DST shifts (these are UTC).
+    # The off-hour run is dedupe-suppressed unless something new appeared. Adjust to taste.
+    - cron: "30 6 * * *"
+    - cron: "30 7 * * *"
+  workflow_dispatch:
+    inputs:
+      force_email:
+        description: "Email even if 0 new matches (for testing)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # The sweep needs your profile.config.mjs. It is gitignored, so in your own
+      # (private) copy of this repo commit it once with: git add -f profile.config.mjs
+      - name: Run sweep
+        id: sweep
+        run: |
+          node job-sweeper.mjs --resolve | tee summary.txt
+          COUNT=$(grep -m1 -oE '[0-9]+ new matches' summary.txt | grep -oE '^[0-9]+' || echo 0)
+          echo "count=${COUNT:-0}" >> "$GITHUB_OUTPUT"
+          {
+            echo '```'
+            cat summary.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Show generated files
+        run: ls -la matches.html matches.csv summary.txt
+
+      - name: Email shortlist
+        if: >-
+          (steps.sweep.outputs.count != '0' && steps.sweep.outputs.count != '') ||
+          (github.event_name == 'workflow_dispatch' && inputs.force_email)
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_HOST }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASS }}
+          subject: "Job sweep: ${{ steps.sweep.outputs.count }} new matches"
+          to: ${{ secrets.MAIL_TO }}
+          from: Job Sweeper <${{ secrets.MAIL_FROM || secrets.SMTP_USER }}>
+          html_body: file://matches.html
+          body: file://summary.txt
+          attachments: matches.csv,matches.html
+
+      # State files are gitignored to keep them out of the source repo; -f commits
+      # them anyway so YOUR copy carries its own dedupe memory between runs.
+      - name: Persist state
+        if: always()
+        run: |
+          git config user.name  "job-sweeper"
+          git config user.email "bot@users.noreply.github.com"
+          git add -f seen.json watchlist.json fingerprinted.json matches.csv matches.html || true
+          git commit -m "sweep $(date -u +%F)" || echo "no changes"
+          git push || echo "nothing to push"
