@@ -2,6 +2,16 @@
 
 Daily automated sweep for remote dev jobs that fit your profile. One file, zero dependencies, Node 18+.
 
+<p align="center">
+  <img src="docs/sweep-demo.gif" alt="One sweep: sources checked, deduped, ranked — 167 reposts hidden" width="720">
+</p>
+
+The morning email — every new match ranked, with a one-line "why it fits":
+
+<p align="center">
+  <img src="docs/digest.png" alt="Ranked shortlist email digest" width="720">
+</p>
+
 It queries a dozen public job APIs and per-company ATS boards, filters to your stack, seniority, and region, drops stale and off-stack noise, collapses duplicates across sources, and prints a ranked shortlist with a one-line "why it fits" note. Run it from a terminal, or let the included GitHub Action run it every morning and email you the shortlist.
 
 ## What it does
