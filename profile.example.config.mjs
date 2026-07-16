@@ -33,8 +33,10 @@ export const REGION_ALLOW_RE = /\b(eu|emea|europe|european|cet|cest|worldwide|an
 export const MAX_AGE_DAYS = 45;
 
 // ATS boards swept on every run: { ats, token } where token is the company's
-// slug on that ATS. The list self-grows at runtime: any company whose ATS link
-// shows up in an aggregator feed is added to watchlist.json automatically.
+// slug on that ATS. ATS APIs are per-company (there is no "search all of
+// Ashby" endpoint), so this seed is a warm start, not the boundary: the list
+// self-grows at runtime — any company whose ATS link shows up in an
+// aggregator feed is added to watchlist.json automatically.
 export const SEED_WATCHLIST = [
   { ats: "ashby", token: "supabase" },
   { ats: "ashby", token: "posthog" },

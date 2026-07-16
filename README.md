@@ -16,6 +16,8 @@ It queries a dozen public job APIs and per-company ATS boards, filters to your s
 
 \* LinkedIn uses the public jobs-guest endpoint, local runs only (skipped in CI), personal-use volume — see the note in the adapter.
 
+A note on scope: ATS platforms only expose per-company job-board APIs — there is no public "search all of Ashby/Greenhouse" endpoint. So `SEED_WATCHLIST` is a warm start, not the boundary: hiring.cafe and freehire.dev already index jobs across those ATS platforms globally, and every ATS link the aggregators surface is added to your watchlist, so that company's board is swept directly from then on.
+
 ## Quickstart
 
 ```bash
