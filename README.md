@@ -99,4 +99,9 @@ This repo came out of a spec-driven, AI-assisted engineering workflow — every 
 
 ## License
 
-[MIT](LICENSE) © 2026 Henry Cordes
+[MIT](LICENSE) 
+
+---
+
+Built by Henry Cordes — [devartist.nl](https://devartist.nl) · [LinkedIn](https://www.linkedin.com/in/henrycordes)
+
