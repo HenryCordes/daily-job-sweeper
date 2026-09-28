@@ -4,7 +4,7 @@ on:
   schedule:
     # Two runs a day so an 08:30-local delivery survives DST shifts (these are UTC).
     # The off-hour run is dedupe-suppressed unless something new appeared. Adjust to taste.
-    - cron: "30 6 * * *"
+    #- cron: "30 6 * * *"
     - cron: "30 7 * * *"
   workflow_dispatch:
     inputs:
