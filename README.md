@@ -16,7 +16,7 @@ It queries a dozen public job APIs and per-company ATS boards, filters to your s
 
 ## What it does
 
-- **Multi-source sweep** — aggregators that need no company list (RemoteOK, Remotive, Jobicy, Himalayas, Arbeitnow, Working Nomads, WeWorkRemotely, Remotely, hiring.cafe, freehire.dev, HN "Who is hiring?", EU Remote Jobs, Jobspresso, NoDesk, Landing.jobs, 4dayweek.io, LinkedIn*) plus direct ATS APIs for companies you name (Greenhouse, Lever, Ashby, and best-effort Recruitee, SmartRecruiters, Workable, Personio).
+- **Multi-source sweep** — aggregators that need no company list (RemoteOK, Remotive, Jobicy, Himalayas, Arbeitnow, Working Nomads, WeWorkRemotely, Remotely, hiring.cafe, freehire.dev, HN "Who is hiring?", EU Remote Jobs, Jobspresso, NoDesk, Landing.jobs, 4dayweek.io, Real Work From Anywhere, Remote First Jobs, TypeScript Jobs, LinkedIn*) plus direct ATS APIs for companies you name (Greenhouse, Lever, Ashby, and best-effort Recruitee, SmartRecruiters, Workable, Personio).
 - **ATS fingerprinting** — list company slugs in `COMPANY_SLUGS`; on first run each is probed against every supported ATS to detect which one it uses. Hits join the watchlist, misses are cached so each slug is only probed once.
 - **Self-growing watchlist** — any ATS link spotted in an aggregator feed (`boards.greenhouse.io/…`, `*.recruitee.com`, …) is added to the watchlist automatically. The sweep gets broader the longer it runs.
 - **Cross-source dedupe** — the same role is collapsed across sources by canonical URL *and* by company + normalized title (stack words stripped, so "Full-Stack, React/Node" equals "Full Stack (React/Node)"), always preferring the company's own posting over an aggregator repost.
