@@ -39,12 +39,12 @@ function renderHTML(matches, today) {
   // (warm-intro path). Link generation only -- the user opens them; nothing is fetched.
   const people = (company, kw) => `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(`${company} ${kw}`)}&origin=GLOBAL_SEARCH_HEADER`;
   const roleKeyword = (title) => (title || "").replace(/\(.*?\)/g, " ").split(/[|,–—-]/)[0].replace(/\s+/g, " ").trim();
-  const th = (t) => `<th style="text-align:left;padding:0 12px 11px;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#9aa0a8;font-weight:600;border-bottom:2px solid #edeef0;">${t}</th>`;
+  const th = (t) => `<th style="text-align:left;padding:0 12px 11px;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#6b7280;font-weight:600;border-bottom:2px solid #edeef0;">${t}</th>`;
   const rows = matches.map((m) => `<tr>
       <td style="${cell}">${badge(m.score)}</td>
-      <td style="${cell}"><a href="${escHtml(m.url)}" style="color:#1f4e79;font-weight:600;font-size:14px;text-decoration:none;">${escHtml(m.title)}</a><div style="color:#9aa0a8;font-size:12px;margin-top:3px;">${escHtml(m.company)} · <a href="${escHtml(people(m.company, "recruiter"))}" style="color:#9aa0a8;">recruiters</a> · <a href="${escHtml(people(m.company, roleKeyword(m.title)))}" style="color:#9aa0a8;">peers</a></div></td>
-      <td style="${cell}color:#6b7280;font-size:13px;">${escHtml(m.location)}</td>
-      <td style="${cell}color:#9aa0a8;font-size:12px;">${escHtml(m.note)}</td>
+      <td style="${cell}"><a href="${escHtml(m.url)}" style="color:#1f4e79;font-weight:600;font-size:14px;text-decoration:none;">${escHtml(m.title)}</a><div style="color:#6b7280;font-size:12px;margin-top:3px;">${escHtml(m.company)} · <a href="${escHtml(people(m.company, "recruiter"))}" style="color:#6b7280;">recruiters</a> · <a href="${escHtml(people(m.company, roleKeyword(m.title)))}" style="color:#6b7280;">peers</a></div></td>
+      <td style="${cell}color:#525a66;font-size:13px;">${escHtml(m.location)}</td>
+      <td style="${cell}color:#6b7280;font-size:12px;">${escHtml(m.note)}</td>
     </tr>`).join("");
   const body = matches.length
     ? `<table role="presentation" width="100%" style="border-collapse:collapse;width:100%;"><thead><tr>${th("Fit")}${th("Role")}${th("Location")}${th("Why")}</tr></thead><tbody>${rows}</tbody></table>`
@@ -53,9 +53,9 @@ function renderHTML(matches, today) {
   return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"></head>
 <body style="margin:0;background:#f4f5f7;padding:24px 12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
 <table role="presentation" width="100%" style="max-width:1360px;margin:0 auto;background:#ffffff;border:1px solid #ececec;border-radius:12px;">
-<tr><td style="padding:28px 28px 6px;"><div style="font-size:19px;font-weight:700;color:#1a1d21;">${n} new remote role${n === 1 ? "" : "s"}</div><div style="font-size:13px;color:#9aa0a8;margin-top:3px;">${escHtml(PROFILE.headline)} &middot; ${today}</div></td></tr>
+<tr><td style="padding:28px 28px 6px;"><div style="font-size:19px;font-weight:700;color:#1a1d21;">${n} new remote role${n === 1 ? "" : "s"}</div><div style="font-size:13px;color:#6b7280;margin-top:3px;">${escHtml(PROFILE.headline)} &middot; ${today}</div></td></tr>
 <tr><td style="padding:14px 20px 20px;">${body}</td></tr>
-<tr><td style="padding:0 28px 26px;"><div style="border-top:1px solid #f0f1f3;padding-top:14px;color:#b3b7be;font-size:11px;">Role titles link straight to the posting. Full history attached as matches.csv.</div></td></tr>
+<tr><td style="padding:0 28px 26px;"><div style="border-top:1px solid #f0f1f3;padding-top:14px;color:#6b7280;font-size:11px;">Role titles link straight to the posting. Full history attached as matches.csv.</div></td></tr>
 </table></body></html>`;
 }
 
