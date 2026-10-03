@@ -40,22 +40,43 @@ function renderHTML(matches, today) {
   const people = (company, kw) => `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(`${company} ${kw}`)}&origin=GLOBAL_SEARCH_HEADER`;
   const roleKeyword = (title) => (title || "").replace(/\(.*?\)/g, " ").split(/[|,–—-]/)[0].replace(/\s+/g, " ").trim();
   const th = (t) => `<th style="text-align:left;padding:0 12px 11px;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#6b7280;font-weight:600;border-bottom:2px solid #edeef0;">${t}</th>`;
-  const rows = matches.map((m) => `<tr>
-      <td style="${cell}">${badge(m.score)}</td>
-      <td style="${cell}"><a href="${escHtml(m.url)}" style="color:#1f4e79;font-weight:600;font-size:14px;text-decoration:none;">${escHtml(m.title)}</a><div style="color:#6b7280;font-size:12px;margin-top:3px;">${escHtml(m.company)} · <a href="${escHtml(people(m.company, "recruiter"))}" style="color:#6b7280;">recruiters</a> · <a href="${escHtml(people(m.company, roleKeyword(m.title)))}" style="color:#6b7280;">peers</a></div></td>
-      <td style="${cell}color:#525a66;font-size:13px;">${escHtml(m.location)}</td>
-      <td style="${cell}color:#6b7280;font-size:12px;">${escHtml(m.note)}</td>
+  const rows = matches.map((m) => `<tr class="row">
+      <td class="c c-fit" style="${cell}">${badge(m.score)}</td>
+      <td class="c c-role" style="${cell}"><a href="${escHtml(m.url)}" style="color:#1f4e79;font-weight:600;font-size:14px;text-decoration:none;">${escHtml(m.title)}</a><div style="color:#6b7280;font-size:12px;margin-top:3px;">${escHtml(m.company)} · <a href="${escHtml(people(m.company, "recruiter"))}" style="color:#6b7280;">recruiters</a> · <a href="${escHtml(people(m.company, roleKeyword(m.title)))}" style="color:#6b7280;">peers</a></div></td>
+      <td class="c c-loc" style="${cell}color:#525a66;font-size:13px;">${escHtml(m.location)}</td>
+      <td class="c c-why" style="${cell}color:#6b7280;font-size:12px;">${escHtml(m.note)}</td>
     </tr>`).join("");
   const body = matches.length
-    ? `<table role="presentation" width="100%" style="border-collapse:collapse;width:100%;"><thead><tr>${th("Fit")}${th("Role")}${th("Location")}${th("Why")}</tr></thead><tbody>${rows}</tbody></table>`
+    ? `<table role="presentation" width="100%" class="tbl" style="border-collapse:collapse;width:100%;"><thead><tr>${th("Fit")}${th("Role")}${th("Location")}${th("Why")}</tr></thead><tbody>${rows}</tbody></table>`
     : `<p style="color:#6b7280;font-size:14px;margin:6px 0 0;">No new matches today. Enjoy the quiet.</p>`;
   const n = matches.length;
-  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"></head>
+  // Inline styles are the desktop layout. The media query is the phone layout,
+  // and it is load-bearing beyond looks: Proton Mail's iOS dark-mode transform
+  // skips darkening the background of any element whose content overflows the
+  // viewport, while still lightening every text colour -- light text on a white
+  // card. These four columns cannot fit ~390px (the table's min-content width
+  // is ~375px before padding), so below 480px each row becomes a block.
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<style>
+@media only screen and (max-width:480px) {
+  .hd { padding:20px 16px 4px !important; }
+  .bd { padding:10px 2px 14px !important; }
+  .ft { padding:0 16px 20px !important; }
+  .tbl, .tbl tbody { display:block !important; width:100% !important; }
+  .tbl thead { display:none !important; }
+  .row { display:block !important; padding:12px 14px !important; border-bottom:1px solid #f0f1f3 !important; overflow:hidden !important; }
+  .c { display:block !important; width:auto !important; border-bottom:0 !important; padding:0 !important; }
+  .c-fit { float:left !important; width:44px !important; }
+  .c-role { margin-left:44px !important; }
+  .c-loc { margin-left:44px !important; padding-top:7px !important; }
+  .c-why { margin-left:44px !important; padding-top:2px !important; }
+}
+</style></head>
 <body style="margin:0;background:#f4f5f7;padding:24px 12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
-<table role="presentation" width="100%" style="max-width:1360px;margin:0 auto;background:#ffffff;border:1px solid #ececec;border-radius:12px;">
-<tr><td style="padding:28px 28px 6px;"><div style="font-size:19px;font-weight:700;color:#1a1d21;">${n} new remote role${n === 1 ? "" : "s"}</div><div style="font-size:13px;color:#6b7280;margin-top:3px;">${escHtml(PROFILE.headline)} &middot; ${today}</div></td></tr>
-<tr><td style="padding:14px 20px 20px;">${body}</td></tr>
-<tr><td style="padding:0 28px 26px;"><div style="border-top:1px solid #f0f1f3;padding-top:14px;color:#6b7280;font-size:11px;">Role titles link straight to the posting. Full history attached as matches.csv.</div></td></tr>
+<table role="presentation" width="100%" class="card" style="max-width:1360px;margin:0 auto;background:#ffffff;border:1px solid #ececec;border-radius:12px;">
+<tr><td class="hd" style="padding:28px 28px 6px;"><div style="font-size:19px;font-weight:700;color:#1a1d21;">${n} new remote role${n === 1 ? "" : "s"}</div><div style="font-size:13px;color:#6b7280;margin-top:3px;">${escHtml(PROFILE.headline)} &middot; ${today}</div></td></tr>
+<tr><td class="bd" style="padding:14px 20px 20px;">${body}</td></tr>
+<tr><td class="ft" style="padding:0 28px 26px;"><div style="border-top:1px solid #f0f1f3;padding-top:14px;color:#6b7280;font-size:11px;">Role titles link straight to the posting. Full history attached as matches.csv.</div></td></tr>
 </table></body></html>`;
 }
 
@@ -129,6 +150,23 @@ async function wpJobFeed(source, feedUrl) {
     out.push({ source, company: tag("job_listing:company") || tag("dc:creator") || "", title: tag("title"),
       location: tag("job_listing:location") || "Remote", remote: true, url: tag("link"),
       tags: [tag("job_listing:job_type"), tag("category")].filter(Boolean), seniority: [], posted: tag("pubDate"), desc: tag("description") });
+  }
+  return out;
+}
+// "Role at Company" RSS shape, shared by Real Work From Anywhere and Remote First
+// Jobs. Company comes from <author> when the feed has one -- that survives role text
+// which itself contains " at " -- with a last-" at " title split as the fallback.
+function parseAtTitleRSS(source, xml, location) {
+  const out = [];
+  for (const m of xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)) {
+    const b = m[1];
+    const tag = (t) => { const x = b.match(new RegExp(`<${t}[^>]*>([\\s\\S]*?)</${t}>`, "i")); return x ? x[1].replace(/<!\[CDATA\[|\]\]>/g, "").trim() : ""; };
+    const raw = tag("title"), company = tag("author"), i = raw.lastIndexOf(" at ");
+    const title = company && raw.endsWith(` at ${company}`) ? raw.slice(0, -(company.length + 4)).trim()
+      : i > 0 ? raw.slice(0, i).trim() : raw;
+    out.push({ source, company: company || (i > 0 ? raw.slice(i + 4).trim() : ""),
+      title, location, remote: true, url: tag("link"),
+      tags: [], seniority: [], posted: tag("pubDate"), desc: tag("description") });
   }
   return out;
 }
@@ -385,6 +423,58 @@ const ADAPTERS = {
     }
     return out;
   },
+  async realworkfromanywhere() {
+    // Curates location-independent listings; the RSS carries no location field, so the
+    // site's "Anywhere in the World" badge becomes the location. Probe (2026-07-16):
+    // ~6% of 160 items still hid a restriction in the description ("based in the
+    // continental US") -- accepted, the shortlist is hand-reviewed.
+    const xml = await (await fetch("https://www.realworkfromanywhere.com/rss.xml", { headers: { "User-Agent": "job-sweeper/1.0" } })).text();
+    return parseAtTitleRSS("realworkfromanywhere", xml, "Anywhere in the World");
+  },
+  async remotefirstjobs() {
+    // Official JSON API only (remotefirstjobs.com/jobs-api; free, credit-the-source
+    // terms). It lags publication by 24h but carries locations[] as country names, so
+    // single-country restrictions ("Poland") reach the region filter as an explicit
+    // deny. The site's real-time RSS was tried and dropped (2026-07-16): its rows are
+    // location-less, so a restricted job with "work from anywhere" boilerplate passed
+    // on day one and the seen-set then hid the corrected API row a day later. Max 3
+    // countries per job -- a broad EU list may truncate the home country away, accepted because
+    // EU-wide postings carry their own description signal. Empty locations[] stays
+    // bare "Remote": no allow signal, the description decides.
+    const out = [];
+    for (let page = 0; page < 5; page++) {
+      let d;
+      try { d = await getJSON(`https://remotefirstjobs.com/api/search-jobs?category=software-development&page=${page}`); } catch { break; }
+      if (!(d.jobs || []).length) break;
+      for (const j of d.jobs) {
+        const countries = (j.locations || []).filter(Boolean);
+        out.push({
+          source: "remotefirstjobs", company: j.company_name || "", title: j.title,
+          location: countries.join(", ") || "Remote", remote: true,
+          // 3 entries hits the API's cap and may be a truncated EU-wide list, so only
+          // 1-2 countries count as an authoritative restriction for the region gate.
+          countries: countries.length && countries.length < 3 ? countries : undefined,
+          url: j.url, tags: [j.category].filter(Boolean), seniority: [j.seniority].filter(Boolean),
+          posted: j.published_at, desc: j.description });
+      }
+    }
+    return out;
+  },
+  async typescriptjobs() {
+    // General ATS aggregator despite the name (6409 jobs incl. .NET/onsite); applyUrl
+    // is the real company posting. Probe (2026-07-16): ?q= switches to relevance order
+    // AND drops the remote facet, so one date-sorted ?remote=true page is the reliable
+    // window (its 100 rows spanned Apr-Jul). countryCode/primaryLocation carry junk
+    // ("Sofia, XX"); remote rows are bare "Remote", so the region gate rides on the
+    // description. skillsPrimary stays out of tags for the same reason as freehire's
+    // skills[]: incidental android/python entries would trip langExcluded.
+    const d = await getJSON("https://typescriptjobs.net/api/jobs?remote=true&limit=100");
+    return (d.data || []).map((j) => ({
+      source: "typescriptjobs", company: j.companyName || "", title: j.title,
+      location: (j.primaryLocation || "Remote").replace(/,?\s*XX$/, ""), remote: j.remoteType === "remote",
+      url: j.applyUrl, tags: [], seniority: [j.experienceLevel].filter(Boolean),
+      posted: j.postedAt, expiry: j.expiresAt, desc: j.description }));
+  },
   async landingjobs() {
     // Probe (2026-07-15) showed no company/city/skills fields as the brief guessed: company must be
     // parsed from the /at/<slug>/ URL path, locations are {country_code} objects, tags are flat strings.
@@ -497,7 +587,11 @@ function langExcluded(hay) {
   return LANG_WORDS.test(hay) || LANG_SUBSTR.some((s) => hay.includes(s));
 }
 function regionOk(job) {
-  // Require a region-allow signal (home country / region-wide / worldwide) in location, tags, or description.
+  // An explicit applicant-country restriction is authoritative: when none of the
+  // listed countries matches the region allow-list, boilerplate like "work from
+  // anywhere" in the description must not rescue the job.
+  if ((job.countries || []).length && !job.countries.some((c) => REGION_ALLOW_RE.test(c))) return false;
+  // Otherwise require a region-allow signal (home country / region-wide / worldwide) in location, tags, or description.
   const hay = lc([job.location, (job.tags || []).join(" "), stripTags(job.desc || "")].join(" "));
   if (REGION_ALLOW_RE.test(hay)) return true;
   if (job.timezones && job.timezones.length) return job.timezones.some((t) => PROFILE.timezones.includes(t));
@@ -563,7 +657,7 @@ async function run() {
   const applied = new Set(readJSON("applied.json", []).map(normCompany));
   const all = [];
 
-  for (const name of ["remoteok", "remotive", "jobicy", "himalayas", "arbeitnow", "workingnomads", "weworkremotely", "tryremotely", "hiringcafe", "hnhiring", "euremotejobs", "jobspresso", "nodesk", "landingjobs", "4dayweek", "freehire", "linkedin"]) {
+  for (const name of ["remoteok", "remotive", "jobicy", "himalayas", "arbeitnow", "workingnomads", "weworkremotely", "tryremotely", "hiringcafe", "hnhiring", "euremotejobs", "jobspresso", "nodesk", "realworkfromanywhere", "remotefirstjobs", "typescriptjobs", "landingjobs", "4dayweek", "freehire", "linkedin"]) {
     try { all.push(...(await ADAPTERS[name]())); console.error(`ok   ${name}`); }
     catch (e) { console.error(`skip ${name}: ${e.message}`); }
   }
@@ -665,8 +759,12 @@ function selftest() {
     { source: "remotive", company: "BerlinOnly", title: "Senior Full Stack Engineer (React/Node)", location: "Remote, Germany", remote: true, url: "https://x.io/u17", tags: [], seniority: [], desc: "React and Node. You must be based in Germany." },
     // multi-country list that includes the Netherlands -> keep
     { source: "remotive", company: "MultiEU", title: "Senior Full Stack Engineer (React/Node)", location: "Germany (Remote); Netherlands (Remote); Spain (Remote)", remote: true, url: "https://x.io/u18", tags: [], seniority: [], desc: "React and Node." },
+    // explicit country restriction beats "work from anywhere" boilerplate -> drop
+    { source: "remotefirstjobs", company: "PolCo", title: "Lead Full Stack Engineer (React)", location: "Poland", remote: true, url: "https://remotefirstjobs.com/companies/polco/jobs/u19", tags: [], seniority: [], countries: ["Poland"], desc: "React and Node. Work from anywhere - as long as you are located in Poland." },
+    // explicit home-country restriction -> keep, no description signal needed
+    { source: "remotefirstjobs", company: "NLFirst", title: "Senior Full Stack Engineer (React)", location: "Netherlands", remote: true, url: "https://remotefirstjobs.com/companies/nlfirst/jobs/u20", tags: [], seniority: [], countries: ["Netherlands"], desc: "React and Node." },
   ];
-  const expectKeep = { "https://x.io/u1": false, "https://x.io/u2": false, "https://jobs.lever.co/jobgether/u3": false, "https://x.io/u4": false, "https://x.io/u5": false, "https://jobs.ashbyhq.com/supabase/u6": true, "https://goodco.com/u7": true, "https://boards.greenhouse.io/goodco/u8": true, "https://mollie.recruitee.com/o/u9": true, "https://x.io/u10": false, "https://x.io/u11": true, "https://x.io/u12": true, "https://x.io/u13": false, "https://justjoin.it/job-offer/u14": false, "https://x.io/u15": false, "https://x.io/u16": true, "https://x.io/u17": false, "https://x.io/u18": true };
+  const expectKeep = { "https://x.io/u1": false, "https://x.io/u2": false, "https://jobs.lever.co/jobgether/u3": false, "https://x.io/u4": false, "https://x.io/u5": false, "https://jobs.ashbyhq.com/supabase/u6": true, "https://goodco.com/u7": true, "https://boards.greenhouse.io/goodco/u8": true, "https://mollie.recruitee.com/o/u9": true, "https://x.io/u10": false, "https://x.io/u11": true, "https://x.io/u12": true, "https://x.io/u13": false, "https://justjoin.it/job-offer/u14": false, "https://x.io/u15": false, "https://x.io/u16": true, "https://x.io/u17": false, "https://x.io/u18": true, "https://remotefirstjobs.com/companies/polco/jobs/u19": false, "https://remotefirstjobs.com/companies/nlfirst/jobs/u20": true };
   let pass = 0;
   for (const j of S) {
     const inter = isIntermediary(j) && DROP_INTERMEDIARIES;
@@ -726,6 +824,29 @@ function selftest() {
     && lj.url === "https://www.linkedin.com/jobs/view/senior-full-stack-engineer-at-acme-4270000001"
     && lj.location.includes("Netherlands") && passesFilter(lj);
   console.log(`${liOk ? "PASS" : "FAIL"} LinkedIn card parser -> filterable job (${lj?.title} @ ${lj?.company})`);
+  // RWFA RSS: company from <author>, " at Company" stripped from the title even when
+  // the role text contains its own " at "; badge location must pass the region filter.
+  const rwfaXml = `<rss><channel><item>
+      <title><![CDATA[Senior Full Stack Engineer, React at scale at Acme Labs]]></title>
+      <description><![CDATA[<p>React, TypeScript and Node. Work from anywhere.</p>]]></description>
+      <link>https://www.realworkfromanywhere.com/jobs/senior-full-stack-engineer-acme-labs-9999</link>
+      <pubDate>${new Date(Date.now() - 2 * 864e5).toUTCString()}</pubDate>
+      <author><![CDATA[Acme Labs]]></author>
+    </item></channel></rss>`;
+  const rj = parseAtTitleRSS("realworkfromanywhere", rwfaXml, "Anywhere in the World")[0];
+  const rwfaOk = !!rj && rj.company === "Acme Labs" && rj.title === "Senior Full Stack Engineer, React at scale"
+    && rj.url === "https://www.realworkfromanywhere.com/jobs/senior-full-stack-engineer-acme-labs-9999"
+    && passesFilter(rj);
+  console.log(`${rwfaOk ? "PASS" : "FAIL"} RWFA RSS parser -> filterable job (${rj?.title} @ ${rj?.company})`);
+  // Items without <author> fall back to the title split for the company.
+  const noAuthorXml = `<rss><channel><item>
+      <title>Senior React Developer at Beta BV</title>
+      <link>https://www.realworkfromanywhere.com/jobs/senior-react-developer-beta-bv-1234</link>
+      <pubDate>${new Date(Date.now() - 2 * 864e5).toUTCString()}</pubDate>
+    </item></channel></rss>`;
+  const fj = parseAtTitleRSS("realworkfromanywhere", noAuthorXml, "Anywhere in the World")[0];
+  const atSplitOk = !!fj && fj.company === "Beta BV" && fj.title === "Senior React Developer";
+  console.log(`${atSplitOk ? "PASS" : "FAIL"} at-title parser splits company without <author> (${fj?.title} @ ${fj?.company})`);
   const appliedSet = new Set(["rocket io", "nova", "nova health"].map(normCompany));
   const appliedOk = normCompany("Rocket.IO") === "rocket io"
     && appliedSet.has(normCompany("Rocket.io")) && appliedSet.has(normCompany("Nova"))
@@ -734,8 +855,8 @@ function selftest() {
   const refHtml = renderHTML([{ score: 42, url: "https://x.io/j", title: "Senior Full Stack Engineer (React/Node)", company: "GoodCo", location: "Remote (EU)", note: "senior" }], "2026-07-16");
   const refOk = refHtml.includes(encodeURIComponent("GoodCo recruiter")) && refHtml.includes(encodeURIComponent("GoodCo Senior Full Stack Engineer"));
   console.log(`${refOk ? "PASS" : "FAIL"} email rows carry recruiter + peers LinkedIn search links`);
-  console.log(`\n${pass}/${S.length} filter + dedupe ${dedupeOk ? "ok" : "FAIL"} + resolver ${extractorOk ? "ok" : "FAIL"} + expiry ${expiryOk ? "ok" : "FAIL"} + stackfit ${offOk ? "ok" : "FAIL"} + hn ${hnOk ? "ok" : "FAIL"} + hnUrl ${hnUrlOk ? "ok" : "FAIL"} + linkedin ${liOk ? "ok" : "FAIL"} + applied ${appliedOk ? "ok" : "FAIL"} + referral ${refOk ? "ok" : "FAIL"}`);
-  process.exit(pass === S.length && dedupeOk && extractorOk && expiryOk && offOk && hnOk && hnUrlOk && liOk && appliedOk && refOk ? 0 : 1);
+  console.log(`\n${pass}/${S.length} filter + dedupe ${dedupeOk ? "ok" : "FAIL"} + resolver ${extractorOk ? "ok" : "FAIL"} + expiry ${expiryOk ? "ok" : "FAIL"} + stackfit ${offOk ? "ok" : "FAIL"} + hn ${hnOk ? "ok" : "FAIL"} + hnUrl ${hnUrlOk ? "ok" : "FAIL"} + linkedin ${liOk ? "ok" : "FAIL"} + rwfa ${rwfaOk ? "ok" : "FAIL"} + atSplit ${atSplitOk ? "ok" : "FAIL"} + applied ${appliedOk ? "ok" : "FAIL"} + referral ${refOk ? "ok" : "FAIL"}`);
+  process.exit(pass === S.length && dedupeOk && extractorOk && expiryOk && offOk && hnOk && hnUrlOk && liOk && rwfaOk && atSplitOk && appliedOk && refOk ? 0 : 1);
 }
 
 process.argv.includes("--selftest") ? selftest() : run();
